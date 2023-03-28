@@ -1,0 +1,95 @@
+import random
+import string
+import pyperclip
+import time
+import sys
+
+#Simple loading screen
+print("Initiating Password Generator")
+
+for i in range(7):
+    sys.stdout.write('\r' + '[*] Loading' + '.' * i)
+    sys.stdout.flush()
+    time.sleep(1)
+
+sys.stdout.write('\r' + '[*] Loading completed.\n')
+sys.stdout.flush()
+
+# Your password manager code goes here
+
+
+print("Howdy Name, Initiating Password Creation...")
+
+# Ask user for password length and complexity
+while True:
+    try:
+        length = int(input("Enter desired password length: "))
+        complexity = input(
+            "Enter desired complexity (Human-readable, Semi-readable, Completely Random): ")
+        if complexity.lower() not in ["human-readable", "semi-readable", "completely random"]:
+            raise ValueError
+        break
+    except ValueError:
+        print("Invalid input. Please try again.")
+
+# Define character types based on complexity
+if complexity.lower() == "human-readable":
+    char_types = [
+        string.ascii_letters,
+        string.digits
+    ]
+elif complexity.lower() == "semi-readable":
+    char_types = [
+        string.ascii_letters,
+        string.digits,
+        string.punctuation
+    ]
+else:
+    char_types = [
+        string.ascii_letters,
+        string.digits,
+        string.punctuation,
+        ''.join(chr(i) for i in range(128, 256))
+    ]
+
+# Generate password
+password = ''.join(random.choice(''.join(char_types)) for _ in range(length))
+
+print(f"Your password is: {password}")
+
+# Ask user if they're satisfied with the password
+while True:
+    response = input("Are you satisfied with the password? (Y/N): ")
+    if response.lower() == "y":
+        pyperclip.copy(password)
+        print("Password has been copied to clipboard.")
+        break
+    elif response.lower() == "n":
+        # Ask user how to increase complexity
+        while True:
+            try:
+                increase_complexity = input(
+                    "How can we increase complexity? (Add Numbers, Add Characters, Add Punctuation, All of the Above): ")
+                if increase_complexity.lower() not in ["add numbers", "add characters", "add punctuation", "all of the above"]:
+                    raise ValueError
+                break
+            except ValueError:
+                print("Invalid input. Please try again.")
+        if increase_complexity.lower() == "add numbers":
+            char_types.append(string.digits)
+        elif increase_complexity.lower() == "add characters":
+            char_types.append(''.join(chr(i) for i in range(256, 512)))
+        elif increase_complexity.lower() == "add punctuation":
+            char_types.append(string.punctuation)
+        else:
+            char_types = [
+                string.ascii_letters,
+                string.digits,
+                string.punctuation,
+                ''.join(chr(i) for i in range(256, 512))
+            ]
+        password = ''.join(random.choice(''.join(char_types))
+                           for _ in range(length))
+        print(f"Your new password is: {password}")
+    else:
+        print("Invalid input. Please try again.")
